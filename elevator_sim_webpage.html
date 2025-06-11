@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elevator Simulation</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    #game-video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: block;
+    }
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <video id="game-video" autoplay muted playsinline></video>
+  <div id="controls" style="display: none;">
+    <button id="btn-up" onclick="choosePath('up')">UP</button>
+    <button id="btn-down" onclick="choosePath('down')">DOWN</button>
+  </div>
+
+  <script>
+    const video = document.getElementById("game-video");
+    const controls = document.getElementById("controls");
+    const upButton = document.getElementById("btn-up");
+    const downButton = document.getElementById("btn-down");
+
+    let currentFloor = 1;
+    let transitioning = false;
+
+    const MIN_FLOOR = 0;
+    const MAX_FLOOR = 3;
+
+    const floorLoops = {
+      0: "videos/00downloop.mp4",
+      1: "videos/01uploop.mp4",
+      2: "videos/02uploop.mp4",
+      3: "videos/03uploop.mp4",
+    };
+
+    const transitions = {
+      "0-1": "videos/00-01.mp4",
+      "1-2": "videos/01-02.mp4",
+      "2-3": "videos/02-03.mp4",
+      "1-0": "videos/01-00.mp4",
+      "2-1": "videos/02-01.mp4",
+      "3-2": "videos/03-02.mp4",
+    };
+
+    function updateButtons() {
+      upButton.style.display = currentFloor >= MAX_FLOOR ? "none" : "inline-block";
+      downButton.style.display = currentFloor <= MIN_FLOOR ? "none" : "inline-block";
+    }
+
+    function playFloorLoop(floor) {
+      video.src = floorLoops[floor];
+      video.loop = true;
+      video.play();
+      controls.style.display = "block";
+      transitioning = false;
+      updateButtons();
+    }
+
+    video.src = "videos/00-01.mp4";
+    video.play();
+
+    video.onended = () => {
+      if (!transitioning) {
+        playFloorLoop(currentFloor);
+      }
+    };
+
+    function choosePath(direction) {
+      controls.style.display = "none";
+      video.loop = false;
+      transitioning = true;
+
+      let nextFloor = currentFloor;
+      if (direction === "up") {
+        nextFloor = Math.min(currentFloor + 1, MAX_FLOOR);
+      } else if (direction === "down") {
+        nextFloor = Math.max(currentFloor - 1, MIN_FLOOR);
+      }
+
+      const key = `${currentFloor}-${nextFloor}`;
+      const transitionVideo = transitions[key];
+
+      if (transitionVideo && nextFloor !== currentFloor) {
+        video.src = transitionVideo;
+        video.onended = () => {
+          currentFloor = nextFloor;
+          playFloorLoop(currentFloor);
+        };
+        video.play();
+      } else {
+        playFloorLoop(currentFloor);
+      }
+    }
+  </script>
+</body>
+</html>
