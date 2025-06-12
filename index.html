@@ -12,7 +12,7 @@
       background: black;
     }
 
-    #game-video {
+    #game-gif, #game-video {
       width: 100vw;
       height: 100vh;
       object-fit: cover;
@@ -56,7 +56,8 @@
   </style>
 </head>
 <body>
-  <video id="game-video" autoplay playsinline></video>
+  <img id="game-gif" src="videos/00uploop.gif" alt="intro gif" />
+  <video id="game-video" playsinline></video>
 
   <div id="controls">
     <button id="btn-up" onclick="choosePath('up')">UP</button>
@@ -64,6 +65,7 @@
   </div>
 
   <script>
+    const gif = document.getElementById("game-gif");
     const video = document.getElementById("game-video");
     const controls = document.getElementById("controls");
     const upButton = document.getElementById("btn-up");
@@ -97,12 +99,16 @@
     }
 
     function playFloorLoop(floor) {
+      gif.style.display = "none";
+      video.style.display = "block";
       video.src = floorLoops[floor];
       video.loop = true;
+      video.muted = false;
       video.play();
       transitioning = false;
       currentFloor = floor;
       updateButtons();
+      controls.style.display = "block";
     }
 
     function choosePath(direction) {
@@ -121,6 +127,8 @@
       const transitionVideo = transitions[key];
 
       if (transitionVideo && nextFloor !== currentFloor) {
+        gif.style.display = "none";
+        video.style.display = "block";
         video.src = transitionVideo;
         video.onended = () => {
           playFloorLoop(nextFloor);
@@ -131,10 +139,12 @@
       }
     }
 
-    // 初始載入 00 樓迴圈影片 + 顯示 UP 按鈕
+    // 初始顯示 GIF，點擊 UP 後進入樓層影片
     window.onload = () => {
-      playFloorLoop(0);
+      gif.style.display = "block";
+      video.style.display = "none";
       upButton.style.display = "inline-block";
+      downButton.style.display = "none";
     };
   </script>
 </body>
