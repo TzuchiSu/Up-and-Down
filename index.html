@@ -23,7 +23,6 @@
     }
 
     #controls {
-      display: none;
       position: fixed;
       width: 100%;
       height: 100%;
@@ -44,6 +43,7 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      display: none;
     }
 
     #btn-up {
@@ -97,30 +97,13 @@
     }
 
     function playFloorLoop(floor) {
-       video.src = floorLoops[floor];
-  video.loop = true;
-  video.play();
-
-  // 只有當 loop 開始播放後才顯示按鈕
-  transitioning = false;
-  currentFloor = floor;
-  controls.style.display = "block";  // ← 這行移到這裡
-  updateButtons();
-}
-
-    // 初始影片（例如 00-01.mp4）
-   transitioning = true;
-video.src = transitions["0-1"];
-video.play();
-
-// 播放完自動切換到 1樓 loop，並顯示按鈕
-video.onended = () => {
-  if (currentFloor === 0 && transitioning) {
-    playFloorLoop(1); // 這會自動顯示按鈕
-  } else if (!transitioning) {
-    playFloorLoop(currentFloor);
-  }
-};
+      video.src = floorLoops[floor];
+      video.loop = true;
+      video.play();
+      transitioning = false;
+      currentFloor = floor;
+      updateButtons();
+    }
 
     function choosePath(direction) {
       controls.style.display = "none";
@@ -140,14 +123,19 @@ video.onended = () => {
       if (transitionVideo && nextFloor !== currentFloor) {
         video.src = transitionVideo;
         video.onended = () => {
-          currentFloor = nextFloor;
-          playFloorLoop(currentFloor);
+          playFloorLoop(nextFloor);
         };
         video.play();
       } else {
         playFloorLoop(currentFloor);
       }
     }
+
+    // 初始載入 00 樓迴圈影片 + 顯示 UP 按鈕
+    window.onload = () => {
+      playFloorLoop(0);
+      upButton.style.display = "inline-block";
+    };
   </script>
 </body>
 </html>
