@@ -105,14 +105,19 @@
     }
 
     // 初始影片（例如 00-01.mp4）
-    video.src = "videos/00-01.mp4";
-    video.play();
+    transitioning = true;
+video.src = transitions["0-1"];
+video.play();
 
-    video.onended = () => {
-      if (!transitioning) {
-        playFloorLoop(currentFloor);
-      }
-    };
+// 播放完自動切到 1 樓 loop
+video.onended = () => {
+  if (currentFloor === 0 && transitioning) {
+    currentFloor = 1;
+    playFloorLoop(currentFloor);
+  } else if (!transitioning) {
+    playFloorLoop(currentFloor);
+  }
+};
 
     function choosePath(direction) {
       controls.style.display = "none";
