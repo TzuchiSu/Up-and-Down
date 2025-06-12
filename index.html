@@ -2,38 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stairs Simulation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elevator Simulation</title>
   <style>
-    body {
+    body, html {
       margin: 0;
+      padding: 0;
       overflow: hidden;
       background: black;
     }
+
     #game-video {
       width: 100vw;
       height: 100vh;
       object-fit: cover;
-      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
     }
+
     #controls {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    #btn-up, #btn-down {
       position: absolute;
-      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 10;
-    }
-    button {
       padding: 10px 20px;
-      margin: 0 10px;
-      font-size: 18px;
+      font-size: 20px;
+      pointer-events: auto;
+      z-index: 10;
+      background-color: rgba(255, 255, 255, 0.7);
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+    }
+
+    #btn-up {
+      top: 40px;
+    }
+
+    #btn-down {
+      bottom: 40px;
     }
   </style>
 </head>
 <body>
   <video id="game-video" autoplay muted playsinline></video>
-  <div id="controls" style="display: none;">
+
+  <div id="controls">
     <button id="btn-up" onclick="choosePath('up')">UP</button>
     <button id="btn-down" onclick="choosePath('down')">DOWN</button>
   </div>
@@ -44,7 +68,7 @@
     const upButton = document.getElementById("btn-up");
     const downButton = document.getElementById("btn-down");
 
-    let currentFloor = 1;
+    let currentFloor = 0;
     let transitioning = false;
 
     const MIN_FLOOR = 0;
@@ -80,7 +104,8 @@
       updateButtons();
     }
 
-    video.src = "videos/00-01.mp4";
+    // 初始影片（例如 00-01.mp4）
+    video.src = "videos/0_to_1.mp4";
     video.play();
 
     video.onended = () => {
